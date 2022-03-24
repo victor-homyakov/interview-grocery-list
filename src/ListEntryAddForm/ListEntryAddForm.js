@@ -1,9 +1,10 @@
 import { useCallback, useRef, useState } from 'react';
-import Stack from 'react-bootstrap/Stack';
-import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Stack from 'react-bootstrap/Stack';
+import { ACTION } from '../data/entries';
 
-export function ListEntryAddForm({ onAdd }) {
+export function ListEntryAddForm({ dispatch }) {
     const [name, setName] = useState('');
     const [priority, setPriority] = useState(1);
     const [addEnabled, setAddEnabled] = useState(false);
@@ -11,26 +12,23 @@ export function ListEntryAddForm({ onAdd }) {
 
     const onNameChange = useCallback((e) => {
         const value = e.target.value;
-        // console.log(value);
         setName(value);
         setAddEnabled(value.length > 0);
     }, []);
 
     const onPriorityChange = useCallback((e) => {
-        const value = parseInt(e.target.value);
-        // console.log(value);
+        const value = parseInt(e.target.value, 10);
         setPriority(value);
     }, []);
 
     const onAddClick = useCallback(() => {
-        // console.log('Add', name, priority, nameInputRef.current);
         if (nameInputRef.current && nameInputRef.current.focus) {
             nameInputRef.current.focus();
         }
         setName('');
         setAddEnabled(false);
-        onAdd(name, priority);
-    }, [name, priority, onAdd]);
+        dispatch({ type: ACTION.ADD, name, priority });
+    }, [name, priority, dispatch]);
 
     return (
         <Stack direction="horizontal" gap={2}>

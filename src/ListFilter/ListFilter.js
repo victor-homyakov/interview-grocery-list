@@ -1,36 +1,39 @@
-import { STATUS_ALL, STATUS_HAVE, STATUS_RAN_OUT, statusToColor } from '../data/status';
+import Badge from 'react-bootstrap/Badge';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
-import Badge from 'react-bootstrap/Badge';
+import { STATUS, statusToColor } from '../data/status';
 
 const radios = [
-    { name: 'All', value: STATUS_ALL },
-    { name: 'I have', value: STATUS_HAVE },
-    { name: 'Ran out', value: STATUS_RAN_OUT },
+    { name: 'All', value: STATUS.ALL },
+    { name: 'I have', value: STATUS.HAVE },
+    { name: 'Ran out', value: STATUS.RAN_OUT },
 ];
+
+function Toggle({ radio, checked, count, setValue }) {
+    const value = radio.value;
+    const variant = 'outline-' + statusToColor[value];
+    return (
+        <ToggleButton
+            type="radio"
+            name="radio"
+            variant={variant}
+            value={value}
+            checked={checked}
+            onChange={(e) => setValue(e.currentTarget.value)}
+        >
+            {radio.name}
+            <Badge bg="secondary" className="ms-2">{count}</Badge>
+        </ToggleButton>
+    );
+}
 
 export function ListFilter({ counts, setValue, value }) {
     return (
         <ButtonGroup>
             {radios.map((radio, i) => {
-                const variant = 'outline-' + statusToColor[radio.value];
-                return (
-                    <ToggleButton
-                        key={i}
-                        id={`radio-${i}`}
-                        type="radio"
-                        name="radio"
-                        variant={variant}
-                        value={radio.value}
-                        checked={value === radio.value}
-                        onChange={(e) => setValue(e.currentTarget.value)}
-                    >
-                        {radio.name}
-                        <Badge bg="secondary" className="ms-2">
-                            {counts[radio.value]}
-                        </Badge>
-                    </ToggleButton>
-                );
+                const checked = value === radio.value;
+                const count = counts[radio.value];
+                return <Toggle key={i} radio={radio} checked={checked} count={count} setValue={setValue} />;
             })}
         </ButtonGroup>
     );

@@ -1,6 +1,8 @@
 import { STATUS } from './status';
 import { generateUid } from '../utils/uid';
 
+const log = console.log;
+
 class Entry {
     id;
     name;
@@ -115,11 +117,13 @@ export function reducer(state, action) {
         case ACTION.TOGGLE_STATUS: {
             const entries = state.entries.slice();
             const index = entries.findIndex(e => e.id === action.id);
-            const entry = entries[index];
+            const oldEntry = entries[index];
+            const newEntry = new Entry(oldEntry.name, action.status, oldEntry.priority);
+            entries[index] = newEntry;
             const counts = copyCountsFromState(state);
-            counts[entry.status]--;
-            counts[action.status]++;
-            entry.status = action.status;
+            counts[oldEntry.status]--;
+            counts[newEntry.status]++;
+            log('toggle', state.counts, '=>', counts);
             return { entries, counts };
         }
         default: {
